@@ -363,4 +363,5 @@ public final class BoundaryRules {
                 .map(dep -> dep.getTargetClass())
                 .collect(Collectors.toSet());
     }
+
 }

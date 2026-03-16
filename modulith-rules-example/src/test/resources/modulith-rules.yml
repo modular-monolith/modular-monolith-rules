@@ -1,0 +1,36 @@
+root-package: com.example
+
+modules:
+  ordering:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
+      - .infrastructure.
+    allowed-dependencies:
+      - inventory
+      - payments
+    communication:
+      notifications: ASYNCHRONOUS
+
+  inventory:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
+
+  payments:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
+
+  notifications:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
+    allowed-dependencies:
+      - ordering
+    communication:
+      ordering: ASYNCHRONOUS
