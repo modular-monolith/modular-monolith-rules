@@ -284,4 +284,5 @@ public final class CycleRules {
                 .map(dep -> dep.getTargetClass())
                 .collect(Collectors.toSet());
     }
+
 }
