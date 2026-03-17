@@ -108,7 +108,7 @@ class ModularMonolithArchitectureTest {
 
         @Test
         void asyncContractsRespected() {
-            rules.communicationRules().communicationContractsAreRespected().check(classes);
+            rules.communicationRules().allCommunicationContractsRespected().check(classes);
         }
 
         @Test
