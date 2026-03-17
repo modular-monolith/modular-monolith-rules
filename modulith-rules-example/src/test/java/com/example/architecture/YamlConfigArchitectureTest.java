@@ -44,7 +44,7 @@ class YamlConfigArchitectureTest {
 
     @Test
     void communicationContractsRespected() {
-        ArchRule rule = rules.communicationRules().communicationContractsAreRespected();
+        ArchRule rule = rules.communicationRules().allCommunicationContractsRespected();
         rule.check(classes);
     }
 }
