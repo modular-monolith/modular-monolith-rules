@@ -1,0 +1,13 @@
+root-package: io.modulith.rules.testfixtures
+
+modules:
+  alpha:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
+  beta:
+    api-packages:
+      - .api.
+    internal-packages:
+      - .internal.
