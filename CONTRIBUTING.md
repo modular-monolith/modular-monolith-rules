@@ -40,7 +40,7 @@ Pull requests should address a single concern. Large pull requests are harder to
 Clone the repository and build with Maven:
 
 ```bash
-git clone https://github.com/modulith/modulith-rules.git
+git clone https://github.com/modular-monolith/modular-monolith-rules.git
 cd modulith-rules
 mvn verify
 ```
