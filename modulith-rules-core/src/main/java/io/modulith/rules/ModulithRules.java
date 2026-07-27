@@ -5,6 +5,7 @@ import io.modulith.rules.api.ModulithRuleSet;
 import io.modulith.rules.boundary.BoundaryRules;
 import io.modulith.rules.communication.CommunicationRules;
 import io.modulith.rules.cycle.CycleRules;
+import io.modulith.rules.graph.ModuleDependencyGraph;
 
 import java.util.List;
 import java.util.Objects;
@@ -110,6 +111,16 @@ public final class ModulithRules {
      */
     public CommunicationRules communicationRules() {
         return new CommunicationRules(ruleSet);
+    }
+
+    /**
+     * Returns a {@link ModuleDependencyGraph} renderer that exports the module
+     * dependencies of imported classes as a Mermaid flowchart string.
+     *
+     * @return a dependency graph renderer bound to this rule set
+     */
+    public ModuleDependencyGraph dependencyGraph() {
+        return new ModuleDependencyGraph(ruleSet);
     }
 
     /**
