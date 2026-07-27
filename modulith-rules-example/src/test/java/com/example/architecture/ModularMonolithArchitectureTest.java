@@ -12,13 +12,18 @@ import io.modulith.rules.api.ModulithRuleSet;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
- * Architecture tests demonstrating three approaches for using modulith-rules.
+ * Architecture tests demonstrating four ways of using modulith-rules.
  *
  * <ul>
  *   <li>{@link QuickStartTests} - minimal setup using convention-based module names</li>
  *   <li>{@link FullConfigTests} - explicit module configuration with all options</li>
  *   <li>{@link ArchUnitNativeTests} - static {@code @ArchTest} fields for native ArchUnit integration</li>
+ *   <li>{@link DependencyGraphTests} - Mermaid dependency graph export</li>
  * </ul>
  */
 class ModularMonolithArchitectureTest {
@@ -173,5 +178,88 @@ class ModularMonolithArchitectureTest {
         @ArchTest
         static final ArchRule access_through_api =
                 RULES.boundaryRules().crossModuleAccessOnlyThroughApi();
+    }
+
+    /**
+     * Approach 4: Mermaid dependency graph export.
+     *
+     * <p>Unlike the other approaches this produces a diagram rather than enforcing a
+     * rule, so it is a plain {@code @Test} rather than an {@code @ArchTest}. Running
+     * it prints a ready-to-paste Mermaid block to the console:
+     *
+     * <pre>
+     * mvn -pl modulith-rules-example -am test -Dtest='ModularMonolithArchitectureTest$DependencyGraphTests'
+     * </pre>
+     *
+     * <p>The assertions keep the diagram honest. They fail if the module graph drifts,
+     * for example if the ordering to inventory dependency disappears or a declared
+     * asynchronous contract stops being rendered as a dashed arrow.
+     */
+    @Nested
+    class DependencyGraphTests {
+
+        private final JavaClasses classes = new ClassFileImporter()
+                .importPackages("com.example");
+
+        /**
+         * The same configuration as {@link FullConfigTests}, because edge style follows
+         * the declared communication contracts. Convention-based setup declares no
+         * contracts, so every edge would render solid.
+         */
+        private final ModulithRuleSet ruleSet = ModulithRuleSet.forRootPackage("com.example")
+                .module(ModuleDefinition.builder("ordering")
+                        .basePackage("com.example.ordering")
+                        .apiPackages(".api.")
+                        .internalPackages(".internal.", ".infrastructure.")
+                        .allowedDependencies("inventory", "payments")
+                        .communicatesWith("notifications", CommunicationType.ASYNCHRONOUS)
+                        .build())
+                .module(ModuleDefinition.builder("inventory")
+                        .basePackage("com.example.inventory")
+                        .apiPackages(".api.")
+                        .internalPackages(".internal.")
+                        .build())
+                .module(ModuleDefinition.builder("payments")
+                        .basePackage("com.example.payments")
+                        .apiPackages(".api.")
+                        .internalPackages(".internal.")
+                        .build())
+                .module(ModuleDefinition.builder("notifications")
+                        .basePackage("com.example.notifications")
+                        .apiPackages(".api.")
+                        .internalPackages(".internal.")
+                        .allowedDependencies("ordering")
+                        .communicatesWith("ordering", CommunicationType.ASYNCHRONOUS)
+                        .build())
+                .build();
+
+        @Test
+        void printsMermaidDependencyGraph() {
+            String mermaid = ModulithRules.of(ruleSet).dependencyGraph().toMermaid(classes);
+
+            // Printed with the fence so the whole block can be pasted into Markdown.
+            System.out.println("```mermaid");
+            System.out.print(mermaid);
+            System.out.println("```");
+
+            assertAll(
+                    () -> assertTrue(mermaid.startsWith("flowchart LR\n"),
+                            "should start with the Mermaid flowchart header"),
+                    () -> assertTrue(mermaid.contains("    payments\n"),
+                            "every module should appear as a node, including leaf modules"),
+                    () -> assertTrue(mermaid.contains("    ordering --> inventory\n"),
+                            "a plain cross-module dependency should be a solid arrow"),
+                    () -> assertTrue(mermaid.contains("    notifications -.-> ordering\n"),
+                            "a declared asynchronous contract should be a dashed arrow"));
+        }
+
+        @Test
+        void graphIsDeterministic() {
+            ModulithRules rules = ModulithRules.of(ruleSet);
+
+            assertEquals(rules.dependencyGraph().toMermaid(classes),
+                    rules.dependencyGraph().toMermaid(classes),
+                    "the same input should always produce the same diagram");
+        }
     }
 }
