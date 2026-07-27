@@ -36,14 +36,13 @@ jobs:
       - name: Set release version
         run: mvn versions:set -DnewVersion=${{ inputs.version }} --batch-mode
 
-      - name: Build and test
-        run: mvn clean verify --batch-mode --no-transfer-progress
-
+      # deploy runs the full lifecycle, so this builds, tests, signs and
+      # publishes in one pass.
       - name: Publish to Maven Central
-        run: mvn deploy --batch-mode --no-transfer-progress -P release -DskipTests
+        run: mvn clean deploy -P release --batch-mode --no-transfer-progress
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Create git tag
