@@ -1,9 +1,9 @@
 # Modulith Rules v0.2.0
 
 Modulith Rules is now available on Maven Central: pre-built ArchUnit rules
-for enforcing module boundaries in modular monolith architectures, published
-as `io.modulith:modulith-rules-core` and `io.modulith:modulith-rules-spring`,
-with `io.modulith:modulith-rules-bom` to align the versions.
+for enforcing module boundaries in modular monolith architectures. It is
+published under the `io.modularmonolith` group id as `modulith-rules-core`
+and `modulith-rules-spring`, with `modulith-rules-bom` to align the versions.
 
 Everything runs at test time. There is no runtime footprint and no
 production classpath impact; add the modules in `test` scope and wire the
