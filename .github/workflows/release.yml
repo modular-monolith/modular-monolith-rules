@@ -12,6 +12,11 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    # Needed to push the release tag and create the GitHub release;
+    # also pins the token to the least privilege the job requires.
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
