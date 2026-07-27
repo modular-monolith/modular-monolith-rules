@@ -18,11 +18,11 @@ can depend on them (see [Installing](#installing)). Work toward `v0.2.0` is in p
 | Java | 17 or newer (CI builds on 17 and 21) |
 | ArchUnit | 1.4.2 |
 | JUnit | 6.1.2 (JUnit Platform) |
-| Spring Boot | 4.1.0 — optional, only for `modulith-rules-spring` |
+| Spring Boot | 4.1.0 (optional, only for `modulith-rules-spring`) |
 
 These are the versions the library is built and tested against. The core module uses only
 long-stable ArchUnit APIs, so older ArchUnit and JUnit 5 lines are likely to work, but
-they are not covered by CI — verify before relying on them.
+they are not covered by CI, so verify before relying on them.
 
 Spring dependencies in `modulith-rules-spring` are `provided` scope: you bring your own
 Spring version, and nothing Spring-related is added to your runtime classpath.
@@ -75,7 +75,7 @@ class ArchitectureTest {
 }
 ```
 
-Note that `allRules()` is deliberately narrow — it returns exactly three rules:
+Note that `allRules()` is deliberately narrow. It returns exactly three rules:
 allowed-dependency enforcement, internal-package protection, and cycle detection. It does
 **not** include communication-contract or Spring rules; add those explicitly (see
 [Applying rules](#applying-rules)).
@@ -161,7 +161,7 @@ the DFS cycle detection against a hand-built graph without importing any classes
 ### Communication rules
 
 Declare a contract with `.communicatesWith(targetModule, CommunicationType)`. Contracts
-are **directional** — they are declared on the calling module and describe how it may
+are **directional**. They are declared on the calling module and describe how it may
 reach the target.
 
 | Rule | What it checks |
@@ -254,7 +254,7 @@ static final List<ArchRule> rules =
 Other entry points: `loadFromClasspath(fileName)`, `loadFromFile(path)`, and
 `loadFromString(yaml)`.
 
-**The YAML parser is hand-written** and covers only the subset shown above — no anchors,
+**The YAML parser is hand-written** and covers only the subset shown above: no anchors,
 flow style (`[a, b]`), multi-line scalars, or multi-document files. Indentation is
 significant and must be exactly 2 spaces per level: module names at 2, properties at 4,
 list items and communication entries at 6. Recognised keys are `root-package`, `modules`,
@@ -270,7 +270,7 @@ ModulithRules.forPackage("com.example", "ordering", "payments", "inventory").all
 ```
 
 Derives each base package as `com.example.<moduleName>`, with no API or internal
-declarations — which, per the notes above, means the API rule has nothing to enforce and
+declarations, which, per the notes above, means the API rule has nothing to enforce and
 internal detection falls back to convention.
 
 ## Violation messages
@@ -324,13 +324,13 @@ mvn -pl modulith-rules-spring -am test \
 
 `-am` is required because `modulith-rules-spring` depends on `modulith-rules-core`, which
 is not installed in your local repository during a partial build. And because `-am` also
-builds core — where that test class does not exist — surefire needs
+builds core, where that test class does not exist, surefire needs
 `-Dsurefire.failIfNoSpecifiedTests=false` to tolerate the empty match.
 
 To inspect a violation message yourself, write a throwaway test that catches the error
 instead of asserting on it, and check
-`modulith-rules-<module>/target/surefire-reports/<class>.txt` — surefire buffers stdout
-rather than printing it to the console:
+`modulith-rules-<module>/target/surefire-reports/<class>.txt`, because surefire buffers
+stdout rather than printing it to the console:
 
 ```java
 try {
