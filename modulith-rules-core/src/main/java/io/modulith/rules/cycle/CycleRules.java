@@ -52,7 +52,9 @@ public final class CycleRules {
      *
      * <p>Violation message format:
      * <pre>
-     * Circular module dependency detected: ordering -> inventory -> ordering
+     * Circular module dependency detected: ordering -> inventory -> ordering.
+     * Fix: break the cycle by moving the shared types into the api package of one of
+     * these modules, or extract them into a separate module that both can depend on.
      * </pre>
      *
      * @return an ArchUnit rule detecting inter-module dependency cycles
@@ -239,7 +241,10 @@ public final class CycleRules {
                     String key = normalizeCycleKey(cycle);
                     if (reportedCycleKeys.add(key)) {
                         String cycleStr = String.join(" -> ", cycle);
-                        String message = "Circular module dependency detected: " + cycleStr;
+                        String message = "Circular module dependency detected: " + cycleStr
+                                + ". Fix: break the cycle by moving the shared types into the"
+                                + " api package of one of these modules, or extract them into"
+                                + " a separate module that both can depend on";
                         events.add(SimpleConditionEvent.violated(cycleStr, message));
                     }
                 }

@@ -53,7 +53,9 @@ public final class CommunicationRules {
      * If a call targets a class in another module and the source module declares an
      * ASYNCHRONOUS contract with that target module, the call must go through async
      * infrastructure (events, messages). Any direct call to a non-infrastructure class
-     * is reported as a violation.
+     * is reported as a violation. Calls to event classes (simple name ending with
+     * "Event") are permitted, because reading a received event's data is part of the
+     * asynchronous flow rather than a synchronous call into the target module.
      *
      * @return an ArchUnit rule enforcing async communication contracts
      */
@@ -78,14 +80,8 @@ public final class CommunicationRules {
                             sourceModule.communicationContracts().get(targetModule.name());
                         if (CommunicationType.ASYNCHRONOUS.equals(contract)
                                 && !isAsyncInfrastructureCall(call)) {
-                            String message = "Module '" + sourceModule.name() + "': class "
-                                + javaClass.getName()
-                                + " makes a direct synchronous call to "
-                                + targetClassName + "." + call.getName()
-                                + "() in module '" + targetModule.name()
-                                + "', but the communication contract requires asynchronous"
-                                + " communication. Use events or messages instead.";
-                            events.add(SimpleConditionEvent.violated(javaClass, message));
+                            events.add(SimpleConditionEvent.violated(javaClass,
+                                asyncViolationMessage(javaClass, call, sourceModule, targetModule)));
                         }
                     }
                 }
@@ -122,12 +118,8 @@ public final class CommunicationRules {
                         CommunicationType contract =
                             sourceModule.communicationContracts().get(targetModule.name());
                         if (CommunicationType.NONE.equals(contract)) {
-                            String message = "Module '" + sourceModule.name() + "': class "
-                                + javaClass.getName()
-                                + " has a dependency on " + targetClassName
-                                + " in module '" + targetModule.name()
-                                + "', but no communication is allowed between these modules.";
-                            events.add(SimpleConditionEvent.violated(javaClass, message));
+                            events.add(SimpleConditionEvent.violated(javaClass,
+                                noneViolationMessage(javaClass, targetClassName, sourceModule, targetModule)));
                         }
                     }
                 }
@@ -164,14 +156,8 @@ public final class CommunicationRules {
                             sourceModule.communicationContracts().get(targetModule.name());
                         if (CommunicationType.ASYNCHRONOUS.equals(contract)
                                 && !isAsyncInfrastructureCall(call)) {
-                            String message = "Module '" + sourceModule.name() + "': class "
-                                + javaClass.getName()
-                                + " makes a direct synchronous call to "
-                                + targetClassName + "." + call.getName()
-                                + "() in module '" + targetModule.name()
-                                + "', but the communication contract requires asynchronous"
-                                + " communication. Use events or messages instead.";
-                            events.add(SimpleConditionEvent.violated(javaClass, message));
+                            events.add(SimpleConditionEvent.violated(javaClass,
+                                asyncViolationMessage(javaClass, call, sourceModule, targetModule)));
                         }
                     }
                     for (Dependency dependency : javaClass.getDirectDependenciesFromSelf()) {
@@ -183,16 +169,40 @@ public final class CommunicationRules {
                         CommunicationType contract =
                             sourceModule.communicationContracts().get(targetModule.name());
                         if (CommunicationType.NONE.equals(contract)) {
-                            String message = "Module '" + sourceModule.name() + "': class "
-                                + javaClass.getName()
-                                + " has a dependency on " + targetClassName
-                                + " in module '" + targetModule.name()
-                                + "', but no communication is allowed between these modules.";
-                            events.add(SimpleConditionEvent.violated(javaClass, message));
+                            events.add(SimpleConditionEvent.violated(javaClass,
+                                noneViolationMessage(javaClass, targetClassName, sourceModule, targetModule)));
                         }
                     }
                 }
             });
+    }
+
+    private static String asyncViolationMessage(JavaClass javaClass, JavaMethodCall call,
+            ModuleDefinition sourceModule, ModuleDefinition targetModule) {
+        String targetClassName = call.getTargetOwner().getName();
+        return "Module '" + sourceModule.name() + "': class "
+            + javaClass.getName()
+            + " makes a direct synchronous call to "
+            + targetClassName + "." + call.getName()
+            + "() in module '" + targetModule.name()
+            + "', but the communication contract requires asynchronous communication."
+            + " Fix: publish an application event from module '" + sourceModule.name()
+            + "' and handle it in module '" + targetModule.name()
+            + "' with an @EventListener, instead of calling "
+            + targetClassName + "." + call.getName() + "() directly";
+    }
+
+    private static String noneViolationMessage(JavaClass javaClass, String targetClassName,
+            ModuleDefinition sourceModule, ModuleDefinition targetModule) {
+        return "Module '" + sourceModule.name() + "': class "
+            + javaClass.getName()
+            + " has a dependency on " + targetClassName
+            + " in module '" + targetModule.name()
+            + "', but no communication is allowed between these modules."
+            + " Fix: remove the dependency on " + targetClassName + " from "
+            + javaClass.getName() + ", or declare a communication contract between '"
+            + sourceModule.name() + "' and '" + targetModule.name()
+            + "' if they are meant to interact";
     }
 
     private boolean isAsyncInfrastructureCall(JavaMethodCall call) {
@@ -202,7 +212,10 @@ public final class CommunicationRules {
                 return true;
             }
         }
-        return false;
+        // Reading data from a received event (e.g. event.orderId() in an event
+        // listener) is part of the asynchronous flow, not a synchronous call into
+        // the target module.
+        return call.getTargetOwner().getSimpleName().endsWith("Event");
     }
 
     private ModuleDefinition findModuleForClass(String className) {

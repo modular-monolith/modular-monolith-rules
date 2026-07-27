@@ -102,7 +102,12 @@ public final class SpringModulithRules {
                                         events.add(SimpleConditionEvent.violated(javaClass,
                                                 javaClass.getName() + " depends on controller "
                                                 + target.getName() + " in a different module '"
-                                                + targetModule.get().name() + "'"));
+                                                + targetModule.get().name() + "'."
+                                                + " Fix: depend on a service interface in "
+                                                + targetModule.get().basePackage() + ".api"
+                                                + " instead of the controller, or move "
+                                                + javaClass.getName() + " into module '"
+                                                + targetModule.get().name() + "' if it belongs there"));
                                     }
                                 }
                             }
@@ -135,8 +140,10 @@ public final class SpringModulithRules {
                                     && !originModule.get().name().equals(repoModule.get().name())) {
                                 events.add(SimpleConditionEvent.violated(javaClass,
                                         origin.getName() + " accesses repository "
-                                        + javaClass.getName() + " from a different module"
-                                        + " -- access data through the module's public API instead"));
+                                        + javaClass.getName() + " from a different module."
+                                        + " Fix: expose the data through a service in "
+                                        + repoModule.get().basePackage() + ".api and call"
+                                        + " that from " + origin.getName() + " instead"));
                             }
                         }
                     }
@@ -179,7 +186,11 @@ public final class SpringModulithRules {
                                             + " is @Transactional and calls "
                                             + targetOwner.getName() + " in module '"
                                             + targetModule.get().name()
-                                            + "' -- transactions should not span modules"));
+                                            + "', so the transaction spans both modules."
+                                            + " Fix: move the call to " + targetOwner.getName()
+                                            + " out of the transactional method, or publish an"
+                                            + " event that module '" + targetModule.get().name()
+                                            + "' handles after the transaction commits"));
                                 }
                             }
                         }
@@ -220,8 +231,10 @@ public final class SpringModulithRules {
                                             javaClass.getName() + " is used by module '"
                                             + originModule.get().name()
                                             + "' but is not in the API package of module '"
-                                            + eventModule.get().name()
-                                            + "' -- move it to the API package"));
+                                            + eventModule.get().name() + "'."
+                                            + " Fix: move " + javaClass.getSimpleName()
+                                            + " to " + eventModule.get().basePackage()
+                                            + ".api so other modules can depend on it"));
                                 }
                             }
                         }
@@ -275,7 +288,11 @@ public final class SpringModulithRules {
                         sourceClass.getName() + " injects " + targetType.getName()
                         + " via " + accessType + " from module '"
                         + targetModule.get().name()
-                        + "' but it is not part of that module's public API"));
+                        + "' but it is not part of that module's public API."
+                        + " Fix: inject an interface from "
+                        + targetModule.get().basePackage() + ".api instead, or add "
+                        + targetType.getName() + " to the api packages of module '"
+                        + targetModule.get().name() + "' if it is meant to be shared"));
             }
         }
     }

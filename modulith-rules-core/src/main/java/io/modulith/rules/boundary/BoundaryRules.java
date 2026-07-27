@@ -51,7 +51,9 @@ public final class BoundaryRules {
      * <pre>
      * Module 'ordering': class com.example.ordering.internal.OrderServiceImpl depends on
      * com.example.notifications.internal.EmailSender in module 'notifications', but
-     * 'notifications' is not in the allowed dependencies [inventory, payments]
+     * 'notifications' is not in the allowed dependencies [inventory, payments].
+     * Fix: add 'notifications' to the allowedDependencies of module 'ordering', or remove
+     * the dependency from com.example.ordering.internal.OrderServiceImpl.
      * </pre>
      *
      * @return an ArchUnit rule enforcing allowed dependency declarations
@@ -84,13 +86,18 @@ public final class BoundaryRules {
                                 Collections.sort(sortedAllowed);
                                 String message = String.format(
                                         "Module '%s': class %s depends on %s in module '%s',"
-                                        + " but '%s' is not in the allowed dependencies %s",
+                                        + " but '%s' is not in the allowed dependencies %s."
+                                        + " Fix: add '%s' to the allowedDependencies of module '%s',"
+                                        + " or remove the dependency from %s",
                                         sourceModule.name(),
                                         javaClass.getName(),
                                         dependency.getName(),
                                         targetModule.name(),
                                         targetModule.name(),
-                                        sortedAllowed
+                                        sortedAllowed,
+                                        targetModule.name(),
+                                        sourceModule.name(),
+                                        javaClass.getName()
                                 );
                                 events.add(SimpleConditionEvent.violated(javaClass, message));
                             }
@@ -105,7 +112,8 @@ public final class BoundaryRules {
      * configured {@code internalPackageIdentifiers}, or by conventional patterns such as
      * {@code .internal.} and {@code .infrastructure.} when none are configured.
      *
-     * <p>Violation messages instruct consumers to use the public API instead.
+     * <p>Violation messages suggest exposing a public API in the target module or
+     * moving the offending class into that module.
      *
      * @return an ArchUnit rule enforcing internal package protection
      */
@@ -132,10 +140,16 @@ public final class BoundaryRules {
                             if (isInInternalPackage(dependency, targetModule)) {
                                 String message = String.format(
                                         "Class %s in module '%s' accesses %s which is in the"
-                                        + " internal package of module '%s'. Use the public API instead.",
+                                        + " internal package of module '%s'."
+                                        + " Fix: expose a service interface in the module's api"
+                                        + " package, for example %s.api, or move %s into"
+                                        + " module '%s' if it belongs there",
                                         javaClass.getName(),
                                         sourceModule.name(),
                                         dependency.getName(),
+                                        targetModule.name(),
+                                        targetModule.basePackage(),
+                                        javaClass.getName(),
                                         targetModule.name()
                                 );
                                 events.add(SimpleConditionEvent.violated(javaClass, message));
@@ -181,12 +195,17 @@ public final class BoundaryRules {
                             if (!targetModule.isPublicApi(dependency.getName())) {
                                 String message = String.format(
                                         "Class %s in module '%s' accesses %s in module '%s'"
-                                        + " outside the public API. Expected API packages: %s",
+                                        + " outside the public API. Expected API packages: %s."
+                                        + " Fix: depend on a class in one of those packages"
+                                        + " instead, or move %s into an API package of module"
+                                        + " '%s' if it is meant to be public",
                                         javaClass.getName(),
                                         sourceModule.name(),
                                         dependency.getName(),
                                         targetModule.name(),
-                                        targetModule.archUnitApiPackageIdentifiers()
+                                        targetModule.archUnitApiPackageIdentifiers(),
+                                        dependency.getName(),
+                                        targetModule.name()
                                 );
                                 events.add(SimpleConditionEvent.violated(javaClass, message));
                             }
@@ -219,11 +238,16 @@ public final class BoundaryRules {
                             if (!targetModuleOpt.get().name().equals(moduleName)) {
                                 String message = String.format(
                                         "Module '%s' should have no dependencies, but class %s"
-                                        + " depends on %s in module '%s'",
+                                        + " depends on %s in module '%s'."
+                                        + " Fix: remove the dependency from %s, or invert it so"
+                                        + " that module '%s' depends on '%s' instead",
                                         moduleName,
                                         javaClass.getName(),
                                         dependency.getName(),
-                                        targetModuleOpt.get().name()
+                                        targetModuleOpt.get().name(),
+                                        javaClass.getName(),
+                                        targetModuleOpt.get().name(),
+                                        moduleName
                                 );
                                 events.add(SimpleConditionEvent.violated(javaClass, message));
                             }
@@ -264,12 +288,17 @@ public final class BoundaryRules {
                                     && !allowedAccessors.contains(sourceModule.name())) {
                                 String message = String.format(
                                         "Module '%s' should only be accessed by %s,"
-                                        + " but class %s in module '%s' accesses %s",
+                                        + " but class %s in module '%s' accesses %s."
+                                        + " Fix: route the access through one of the allowed"
+                                        + " modules, or add '%s' to the accessor list for"
+                                        + " module '%s'",
                                         moduleName,
                                         Arrays.asList(accessorModuleNames),
                                         javaClass.getName(),
                                         sourceModule.name(),
-                                        dependency.getName()
+                                        dependency.getName(),
+                                        sourceModule.name(),
+                                        moduleName
                                 );
                                 events.add(SimpleConditionEvent.violated(javaClass, message));
                             }
