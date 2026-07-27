@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.modulith</groupId>
+        <groupId>io.modularmonolith</groupId>
         <artifactId>modulith-rules-parent</artifactId>
         <version>0.2.0-SNAPSHOT</version>
     </parent>
@@ -32,13 +32,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.modulith</groupId>
+            <groupId>io.modularmonolith</groupId>
             <artifactId>modulith-rules-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.modulith</groupId>
+            <groupId>io.modularmonolith</groupId>
             <artifactId>modulith-rules-spring</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
