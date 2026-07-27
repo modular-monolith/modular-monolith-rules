@@ -53,7 +53,9 @@ public final class CommunicationRules {
      * If a call targets a class in another module and the source module declares an
      * ASYNCHRONOUS contract with that target module, the call must go through async
      * infrastructure (events, messages). Any direct call to a non-infrastructure class
-     * is reported as a violation.
+     * is reported as a violation. Calls to event classes (simple name ending with
+     * "Event") are permitted, because reading a received event's data is part of the
+     * asynchronous flow rather than a synchronous call into the target module.
      *
      * @return an ArchUnit rule enforcing async communication contracts
      */
@@ -210,7 +212,10 @@ public final class CommunicationRules {
                 return true;
             }
         }
-        return false;
+        // Reading data from a received event (e.g. event.orderId() in an event
+        // listener) is part of the asynchronous flow, not a synchronous call into
+        // the target module.
+        return call.getTargetOwner().getSimpleName().endsWith("Event");
     }
 
     private ModuleDefinition findModuleForClass(String className) {
