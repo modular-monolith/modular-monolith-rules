@@ -37,6 +37,7 @@
     </scm>
 
     <modules>
+        <module>modulith-rules-bom</module>
         <module>modulith-rules-core</module>
         <module>modulith-rules-spring</module>
         <module>modulith-rules-example</module>
