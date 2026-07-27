@@ -7,9 +7,11 @@ coupling, and no impact on your production classpath.
 
 ## Project status
 
-**Not yet published to Maven Central.** The current version is `0.1.0-SNAPSHOT` and no
-release has been tagged, so you must build and install the artifacts locally before you
-can depend on them (see [Installing](#installing)). Work toward `v0.2.0` is in progress.
+The first public release, `v0.2.0`, is published to Maven Central under the
+`io.modulith` group id. The sources on `main` carry the next development version
+(`0.2.0-SNAPSHOT`); to work against unreleased changes, build from source (see
+[Installing](#installing)). The release process itself is documented in
+[PUBLISHING.md](PUBLISHING.md).
 
 ## Requirements
 
@@ -29,21 +31,13 @@ Spring version, and nothing Spring-related is added to your runtime classpath.
 
 ## Installing
 
-Because nothing is published yet, build from source:
-
-```bash
-git clone https://github.com/modular-monolith/modular-monolith-rules.git
-cd modular-monolith-rules
-mvn clean install
-```
-
-Then declare the dependency with the snapshot version:
+Add the core module in `test` scope:
 
 ```xml
 <dependency>
-    <groupId>io.github.modulith</groupId>
+    <groupId>io.modulith</groupId>
     <artifactId>modulith-rules-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -52,11 +46,20 @@ Add `modulith-rules-spring` as well if you want the Spring-specific rules:
 
 ```xml
 <dependency>
-    <groupId>io.github.modulith</groupId>
+    <groupId>io.modulith</groupId>
     <artifactId>modulith-rules-spring</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <scope>test</scope>
 </dependency>
+```
+
+To work against unreleased changes instead, build from source and depend on the
+`0.2.0-SNAPSHOT` version:
+
+```bash
+git clone https://github.com/modular-monolith/modular-monolith-rules.git
+cd modular-monolith-rules
+mvn clean install
 ```
 
 ## Quick start
@@ -306,6 +309,34 @@ OrderServiceImpl.placeOrder is @Transactional and calls
 modules. Fix: move the call out of the transactional method, or publish an event that
 module 'payments' handles after the transaction commits
 ```
+
+## Dependency graph export
+
+`dependencyGraph().toMermaid(classes)` renders the module graph as a Mermaid
+flowchart string, ready to paste into any Markdown file:
+
+```java
+String mermaid = ModulithRules.of(RULE_SET).dependencyGraph().toMermaid(classes);
+System.out.println(mermaid);
+```
+
+```mermaid
+flowchart LR
+    inventory
+    notifications
+    ordering
+    payments
+    notifications -.-> ordering
+    ordering --> inventory
+```
+
+Every registered module appears as a node, including isolated ones. Solid
+arrows are observed dependencies; an arrow renders dashed when the source
+module declares `communicatesWith(target, CommunicationType.ASYNCHRONOUS)`,
+so the convention-based setup (which declares no contracts) renders all edges
+solid. Output is deterministic: nodes sort by name and edges by source then
+target, which keeps diffs clean when the diagram is committed. The method
+never writes files; pipe the string wherever you want it.
 
 ## Building and testing
 
