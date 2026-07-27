@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.modulith</groupId>
+    <groupId>io.modulith</groupId>
     <artifactId>modulith-rules-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>modulith-rules</name>
@@ -23,8 +23,9 @@
 
     <developers>
         <developer>
-            <id>modular-monolith</id>
-            <name>modular-monolith</name>
+            <id>modulith</id>
+            <name>Omphile Matheolane</name>
+            <email>omphile.matheolane@innovoyant.com</email>
             <url>https://github.com/modular-monolith</url>
         </developer>
     </developers>
@@ -36,6 +37,7 @@
     </scm>
 
     <modules>
+        <module>modulith-rules-bom</module>
         <module>modulith-rules-core</module>
         <module>modulith-rules-spring</module>
         <module>modulith-rules-example</module>
@@ -46,6 +48,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Reproducible builds: identical inputs produce byte-identical jars -->
+        <project.build.outputTimestamp>2026-07-27T00:00:00Z</project.build.outputTimestamp>
 
         <archunit.version>1.4.2</archunit.version>
         <junit.version>6.1.2</junit.version>
@@ -58,6 +62,7 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+        <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -117,6 +122,12 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
                 </plugin>
 
                 <plugin>

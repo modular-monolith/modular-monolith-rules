@@ -144,4 +144,27 @@ public final class ModulithRules {
                 cycleRules().noCircularDependenciesBetweenModules()
         );
     }
+
+    /**
+     * Returns every core rule: the three rules of {@link #allRules()} plus
+     * API-only cross-module access and communication contract enforcement.
+     *
+     * <p>The additional rules are safe to apply to any configuration because they
+     * skip what is not declared: {@code crossModuleAccessOnlyThroughApi} ignores
+     * modules without declared API packages, and the communication rule ignores
+     * module pairs without a declared contract. Prefer this method when you want
+     * the full core rule set in one list; use {@link #allRules()} when you only
+     * want the original narrow trio.
+     *
+     * @return an unmodifiable list of all core ArchUnit rules
+     */
+    public List<ArchRule> allCoreRules() {
+        return List.of(
+                boundaryRules().onlyAllowedDependenciesAreUsed(),
+                boundaryRules().noModuleAccessesInternalsOfOthers(),
+                boundaryRules().crossModuleAccessOnlyThroughApi(),
+                cycleRules().noCircularDependenciesBetweenModules(),
+                communicationRules().allCommunicationContractsRespected()
+        );
+    }
 }

@@ -104,6 +104,33 @@ class SpringModulithRulesTest {
     }
 
     // ---------------------------------------------------------------------------
+    // Factory and rule list
+    // ---------------------------------------------------------------------------
+
+    @Test
+    @DisplayName("of() mirrors the ModulithRules.of factory style")
+    void of_shouldCreateFactory() {
+        assertDoesNotThrow(() ->
+                SpringModulithRules.of(cleanRules_ruleSet()).allRules());
+    }
+
+    @Test
+    @DisplayName("allRules returns one rule per Spring check and they pass on the clean modules")
+    void allRules_shouldReturnFiveRules_andPassOnCleanModules() {
+        var rules = SpringModulithRules.of(cleanRules_ruleSet()).allRules();
+
+        org.assertj.core.api.Assertions.assertThat(rules).hasSize(5);
+        assertDoesNotThrow(() -> rules.forEach(rule -> rule.check(cleanClasses())));
+    }
+
+    private static io.modulith.rules.api.ModulithRuleSet cleanRules_ruleSet() {
+        return ModulithRuleSet.forRootPackage(FIXTURE_ROOT)
+                .module(billingModule())
+                .module(paymentsModule())
+                .build();
+    }
+
+    // ---------------------------------------------------------------------------
     // controllersShouldNotCrossModuleBoundaries
     // ---------------------------------------------------------------------------
 

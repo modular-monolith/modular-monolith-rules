@@ -12,6 +12,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import io.modulith.rules.api.ModuleDefinition;
 import io.modulith.rules.api.ModulithRuleSet;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -63,6 +64,33 @@ public final class SpringModulithRules {
      */
     public SpringModulithRules(ModulithRuleSet ruleSet) {
         this.ruleSet = ruleSet;
+    }
+
+    /**
+     * Creates a {@code SpringModulithRules} factory for the given rule set,
+     * mirroring {@code ModulithRules.of(ruleSet)} so both entry points read the same.
+     *
+     * @param ruleSet the module registry describing the architecture under test
+     * @return a new {@code SpringModulithRules} factory
+     */
+    public static SpringModulithRules of(ModulithRuleSet ruleSet) {
+        return new SpringModulithRules(ruleSet);
+    }
+
+    /**
+     * Returns every Spring-specific rule as a single list, convenient for an
+     * {@code @ArchTest} field or a loop over {@code rule.check(classes)}.
+     *
+     * @return an unmodifiable list of all Spring ArchUnit rules
+     */
+    public List<ArchRule> allRules() {
+        return List.of(
+                controllersShouldNotCrossModuleBoundaries(),
+                repositoriesShouldBeModuleInternal(),
+                transactionalMethodsShouldNotSpanModules(),
+                eventClassesShouldBeInApiPackages(),
+                noDirectInjectionOfInternalBeans()
+        );
     }
 
     /**

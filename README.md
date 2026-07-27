@@ -1,5 +1,9 @@
 # Modulith Rules
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.modulith/modulith-rules-core)](https://central.sonatype.com/artifact/io.modulith/modulith-rules-core)
+[![CI](https://github.com/modular-monolith/modular-monolith-rules/actions/workflows/ci.yml/badge.svg)](https://github.com/modular-monolith/modular-monolith-rules/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
 Pre-built ArchUnit rules for enforcing module boundaries in modular monolith architectures.
 
 Modulith Rules runs entirely at test time. It has no runtime footprint, no framework
@@ -7,9 +11,10 @@ coupling, and no impact on your production classpath.
 
 ## Project status
 
-**Not yet published to Maven Central.** The current version is `0.1.0-SNAPSHOT` and no
-release has been tagged, so you must build and install the artifacts locally before you
-can depend on them (see [Installing](#installing)). Work toward `v0.2.0` is in progress.
+Modulith Rules is published to Maven Central under the `io.modulith` group id;
+the current release is `v0.2.0`. The sources on `main` carry the next development
+version (`0.2.0-SNAPSHOT`); to work against unreleased changes, build from source
+(see [Installing](#installing)).
 
 ## Requirements
 
@@ -29,21 +34,13 @@ Spring version, and nothing Spring-related is added to your runtime classpath.
 
 ## Installing
 
-Because nothing is published yet, build from source:
-
-```bash
-git clone https://github.com/modular-monolith/modular-monolith-rules.git
-cd modular-monolith-rules
-mvn clean install
-```
-
-Then declare the dependency with the snapshot version:
+Add the core module in `test` scope:
 
 ```xml
 <dependency>
-    <groupId>io.github.modulith</groupId>
+    <groupId>io.modulith</groupId>
     <artifactId>modulith-rules-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -52,11 +49,37 @@ Add `modulith-rules-spring` as well if you want the Spring-specific rules:
 
 ```xml
 <dependency>
-    <groupId>io.github.modulith</groupId>
+    <groupId>io.modulith</groupId>
     <artifactId>modulith-rules-spring</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <scope>test</scope>
 </dependency>
+```
+
+If you use both modules, import the BOM once and drop the versions from the
+individual dependencies:
+
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.modulith</groupId>
+            <artifactId>modulith-rules-bom</artifactId>
+            <version>0.2.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+To work against unreleased changes instead, build from source and depend on the
+`0.2.0-SNAPSHOT` version:
+
+```bash
+git clone https://github.com/modular-monolith/modular-monolith-rules.git
+cd modular-monolith-rules
+mvn clean install
 ```
 
 ## Quick start
@@ -76,9 +99,11 @@ class ArchitectureTest {
 ```
 
 Note that `allRules()` is deliberately narrow. It returns exactly three rules:
-allowed-dependency enforcement, internal-package protection, and cycle detection. It does
-**not** include communication-contract or Spring rules; add those explicitly (see
-[Applying rules](#applying-rules)).
+allowed-dependency enforcement, internal-package protection, and cycle detection.
+Use `allCoreRules()` for the full core set, which adds API-only cross-module access
+and communication contract enforcement; both added rules skip anything you have not
+declared, so the list is safe on any configuration. Spring rules are separate either
+way (see [Applying rules](#applying-rules)).
 
 ### Declaring modules explicitly
 
@@ -125,12 +150,13 @@ rules.cycleRules().noModuleCycles().check(classes);
 rules.communicationRules().allCommunicationContractsRespected().check(classes);
 ```
 
-Spring rules are **not** reachable from `ModulithRules`. Construct them directly from the
-same rule set:
+Spring rules live in their own factory, built from the same rule set with the same
+`of(...)` style:
 
 ```java
-SpringModulithRules springRules = new SpringModulithRules(RULE_SET);
+SpringModulithRules springRules = SpringModulithRules.of(RULE_SET);
 springRules.repositoriesShouldBeModuleInternal().check(classes);
+springRules.allRules().forEach(rule -> rule.check(classes));
 ```
 
 ## Rules
@@ -307,6 +333,34 @@ modules. Fix: move the call out of the transactional method, or publish an event
 module 'payments' handles after the transaction commits
 ```
 
+## Dependency graph export
+
+`dependencyGraph().toMermaid(classes)` renders the module graph as a Mermaid
+flowchart string, ready to paste into any Markdown file:
+
+```java
+String mermaid = ModulithRules.of(RULE_SET).dependencyGraph().toMermaid(classes);
+System.out.println(mermaid);
+```
+
+```mermaid
+flowchart LR
+    inventory
+    notifications
+    ordering
+    payments
+    notifications -.-> ordering
+    ordering --> inventory
+```
+
+Every registered module appears as a node, including isolated ones. Solid
+arrows are observed dependencies; an arrow renders dashed when the source
+module declares `communicatesWith(target, CommunicationType.ASYNCHRONOUS)`,
+so the convention-based setup (which declares no contracts) renders all edges
+solid. Output is deterministic: nodes sort by name and edges by source then
+target, which keeps diffs clean when the diagram is committed. The method
+never writes files; pipe the string wherever you want it.
+
 ## Building and testing
 
 ```bash
@@ -344,6 +398,7 @@ try {
 
 | Artifact | Purpose |
 |----------|---------|
+| `modulith-rules-bom` | Bill of materials: import once to align the versions of all modulith-rules artifacts. |
 | `modulith-rules-core` | Boundary, cycle, and communication rules. Fluent API and YAML loader. No Spring dependency. |
 | `modulith-rules-spring` | Spring Boot rules for controllers, repositories, transactions, events, and injection. |
 | `modulith-rules-example` | Working example project. Doubles as an end-to-end test of the published rules. |
