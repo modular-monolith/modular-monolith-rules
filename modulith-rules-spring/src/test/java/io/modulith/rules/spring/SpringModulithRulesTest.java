@@ -120,6 +120,7 @@ class SpringModulithRulesTest {
         assertThatThrownBy(() ->
                 violatingRules().controllersShouldNotCrossModuleBoundaries().check(violatingClasses()))
                 .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("Fix:")
                 .hasMessageContaining("OrderController")
                 .hasMessageContaining("PaymentController");
     }
@@ -141,6 +142,7 @@ class SpringModulithRulesTest {
         assertThatThrownBy(() ->
                 violatingRules().repositoriesShouldBeModuleInternal().check(violatingClasses()))
                 .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("Fix:")
                 .hasMessageContaining("OrderServiceImpl")
                 .hasMessageContaining("PaymentLedgerRepository");
     }
@@ -162,6 +164,7 @@ class SpringModulithRulesTest {
         assertThatThrownBy(() ->
                 violatingRules().transactionalMethodsShouldNotSpanModules().check(violatingClasses()))
                 .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("Fix:")
                 .hasMessageContaining("placeOrder")
                 .hasMessageContaining("payments");
     }
@@ -183,6 +186,7 @@ class SpringModulithRulesTest {
         assertThatThrownBy(() ->
                 violatingRules().eventClassesShouldBeInApiPackages().check(violatingClasses()))
                 .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("Fix:")
                 .hasMessageContaining("PaymentSettledEvent")
                 .hasMessageContaining("orders");
     }
@@ -204,6 +208,7 @@ class SpringModulithRulesTest {
         assertThatThrownBy(() ->
                 violatingRules().noDirectInjectionOfInternalBeans().check(violatingClasses()))
                 .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("Fix:")
                 .hasMessageContaining("OrderServiceImpl")
                 .hasMessageContaining("PaymentLedgerRepository");
     }

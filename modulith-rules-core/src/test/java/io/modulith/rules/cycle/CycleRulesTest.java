@@ -78,7 +78,7 @@ class CycleRulesTest {
     }
 
     @Test
-    @DisplayName("noModuleCycles failure message contains both module names in the cycle path")
+    @DisplayName("noModuleCycles failure message contains the cycle path and a fix suggestion")
     void noCycles_failureMessage_shouldContainCyclePath() {
         JavaClasses classes = new ClassFileImporter()
                 .importPackages(CYCLE_A_PKG, CYCLE_B_PKG);
@@ -92,7 +92,8 @@ class CycleRulesTest {
         assertThatThrownBy(() -> rules.noModuleCycles().check(classes))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("cycleA")
-                .hasMessageContaining("cycleB");
+                .hasMessageContaining("cycleB")
+                .hasMessageContaining("Fix:");
     }
 
     @Test

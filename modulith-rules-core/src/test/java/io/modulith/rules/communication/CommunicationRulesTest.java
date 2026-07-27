@@ -159,7 +159,8 @@ class CommunicationRulesTest {
         assertThatThrownBy(() -> rules.allCommunicationContractsRespected().check(classes))
                 .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("sender")
-                .hasMessageContaining("gamma");
+                .hasMessageContaining("gamma")
+                .hasMessageContaining("Fix:");
     }
 
     // ---------------------------------------------------------------------------
