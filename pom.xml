@@ -209,7 +209,14 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
+                            <!-- Deployments stop at validation in the Portal for manual
+                                 review. Flip to true to publish automatically once the
+                                 pipeline is trusted. -->
                             <autoPublish>false</autoPublish>
+                            <!-- Block until the Portal finishes validating, so a failed
+                                 validation fails the release build rather than passing
+                                 silently after upload. -->
+                            <waitUntil>validated</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
