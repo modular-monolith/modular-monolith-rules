@@ -1,6 +1,6 @@
 # Modulith Rules
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.modulith/modulith-rules-core)](https://central.sonatype.com/artifact/io.modulith/modulith-rules-core)
+[![Maven Central](https://img.shields.io/maven-central/v/io.modularmonolith/modulith-rules-core)](https://central.sonatype.com/artifact/io.modularmonolith/modulith-rules-core)
 [![CI](https://github.com/modular-monolith/modular-monolith-rules/actions/workflows/ci.yml/badge.svg)](https://github.com/modular-monolith/modular-monolith-rules/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
@@ -11,7 +11,7 @@ coupling, and no impact on your production classpath.
 
 ## Project status
 
-Modulith Rules is published to Maven Central under the `io.modulith` group id;
+Modulith Rules is published to Maven Central under the `io.modularmonolith` group id;
 the current release is `v0.2.0`. The sources on `main` carry the next development
 version (`0.2.0-SNAPSHOT`); to work against unreleased changes, build from source
 (see [Installing](#installing)).
@@ -38,7 +38,7 @@ Add the core module in `test` scope:
 
 ```xml
 <dependency>
-    <groupId>io.modulith</groupId>
+    <groupId>io.modularmonolith</groupId>
     <artifactId>modulith-rules-core</artifactId>
     <version>0.2.0</version>
     <scope>test</scope>
@@ -49,7 +49,7 @@ Add `modulith-rules-spring` as well if you want the Spring-specific rules:
 
 ```xml
 <dependency>
-    <groupId>io.modulith</groupId>
+    <groupId>io.modularmonolith</groupId>
     <artifactId>modulith-rules-spring</artifactId>
     <version>0.2.0</version>
     <scope>test</scope>
@@ -63,7 +63,7 @@ individual dependencies:
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>io.modulith</groupId>
+            <groupId>io.modularmonolith</groupId>
             <artifactId>modulith-rules-bom</artifactId>
             <version>0.2.0</version>
             <type>pom</type>
