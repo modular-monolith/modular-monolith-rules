@@ -51,7 +51,7 @@
         <!-- Reproducible builds: identical inputs produce byte-identical jars -->
         <project.build.outputTimestamp>2026-07-27T00:00:00Z</project.build.outputTimestamp>
 
-        <archunit.version>1.4.2</archunit.version>
+        <archunit.version>1.5.0</archunit.version>
         <junit.version>6.1.2</junit.version>
         <assertj.version>3.27.7</assertj.version>
         <spring-boot.version>4.1.0</spring-boot.version>
