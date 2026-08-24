@@ -54,7 +54,7 @@
         <archunit.version>1.4.2</archunit.version>
         <junit.version>6.1.2</junit.version>
         <assertj.version>3.27.7</assertj.version>
-        <spring-boot.version>4.1.0</spring-boot.version>
+        <spring-boot.version>4.1.1</spring-boot.version>
 
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
