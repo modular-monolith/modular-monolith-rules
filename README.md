@@ -410,16 +410,46 @@ deliberately clean arrangements so both branches of every rule are exercised.
 
 ## How it differs from Spring Modulith
 
-Spring Modulith is a runtime framework providing module verification, observability, and
-event publication. Modulith Rules is test-time only.
+Modulith Rules is a focused architecture-testing library built on ArchUnit.
+Spring Modulith is a broader toolkit for building modular Spring Boot
+applications. Both support architecture verification during tests.
 
-- Works with any Spring Boot project, including those not using the Spring Modulith runtime
-- Ships opinionated, ready-made rules instead of requiring custom ArchUnit authoring
-- Supports non-Spring projects through the core module
-- Runs during `mvn test` with zero production overhead
+Spring Modulith already provides built-in checks for module cycles, access
+to internal packages, and explicitly allowed dependencies through
+`ApplicationModules.verify()`. It also provides module integration testing,
+generated documentation, and optional runtime features such as event
+publication infrastructure and observability.
 
-The two are complementary: Spring Modulith for runtime module isolation, Modulith Rules
-for build-time architecture enforcement.
+Modulith Rules focuses on configurable architecture policies: module
+boundaries, dependency cycles, directional communication contracts, and
+opinionated Spring-specific checks. Its core module has no Spring dependency.
+
+| Concern | Modulith Rules | Spring Modulith |
+|---------|----------------|-----------------|
+| Primary focus | Configurable ArchUnit rules for modular monoliths | Modularity toolkit for Spring Boot applications |
+| Architecture verification | Runs during tests | Runs during tests; optional startup verification is also available |
+| Production classpath | Nothing added when used in test scope | Verification can be used in test scope; runtime features require corresponding production dependencies |
+| Framework dependency | Framework-independent core; optional Spring rules | Designed for Spring Boot applications |
+| Module configuration | Fluent Java API, YAML, or package conventions | Package conventions, annotations, and customization APIs |
+| Built-in structural checks | Allowed dependencies, internal-package protection, API-only access, and cycles | Module cycles, internal access, and explicitly allowed dependencies |
+| Additional architecture policies | Directional communication contracts and Spring-specific rules for controllers, repositories, transactions, events, and injection | Extensible verification with support for additional checks |
+| Module integration testing | Not provided | Supported |
+| Runtime event publication and observability | Not provided | Available through optional modules |
+
+Choose Modulith Rules when you want a framework-independent architecture
+rule library, external module configuration, or its specific communication
+and Spring architecture policies.
+
+Choose Spring Modulith when you want an integrated Spring Boot modularity
+toolkit covering structural verification, module integration testing,
+documentation, and optional runtime capabilities.
+
+The two can be used together when Modulith Rules provides additional
+policies you need. If Spring Modulith already covers your requirements,
+adding another library may be unnecessary.
+
+See the [Spring Modulith documentation](https://docs.spring.io/spring-modulith/reference/)
+for its verification model and available features.
 
 ## Contributing
 
