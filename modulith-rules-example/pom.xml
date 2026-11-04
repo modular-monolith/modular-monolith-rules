@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.modularmonolith</groupId>
         <artifactId>modulith-rules-parent</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>modulith-rules-example</artifactId>
@@ -15,6 +15,14 @@
 
     <name>modulith-rules-example</name>
     <description>Example project demonstrating modulith-rules usage</description>
+
+    <!-- Stated explicitly, not inherited: see the note in the parent POM properties -->
+    <url>${project.scm.url}</url>
+    <scm>
+        <connection>${project.scm.connection}</connection>
+        <developerConnection>${project.scm.developerConnection}</developerConnection>
+        <url>${project.scm.url}</url>
+    </scm>
 
     <build>
         <plugins>
