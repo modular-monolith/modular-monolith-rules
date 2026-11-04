@@ -84,6 +84,10 @@ mvn clean install
 
 ## Quick start
 
+If you want the shortest possible route, the [quickstart](quickstart/) folder holds a
+drop-in `ArchitectureTest.java`, the Maven and Gradle snippets, and an archetype that
+generates a two-module project with the test already in place.
+
 The fastest path is convention-based: each module's base package is derived as
 `<rootPackage>.<moduleName>`.
 
