@@ -1,0 +1,40 @@
+name: Add my team to ADOPTERS.md
+description: Tell us that Modulith Rules runs in your build, so we can list you.
+title: "Adopter: <organisation or project>"
+labels: [adopter]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for running Modulith Rules. Listing adopters helps other teams judge whether
+        the rules fit their codebase, and it helps the project show real use. Only share what
+        you are comfortable making public.
+  - type: input
+    id: organisation
+    attributes:
+      label: Organisation or project
+      placeholder: Acme Payments, or github.com/acme/ledger
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: Website, repository, or a public page we can point to.
+  - type: input
+    id: since
+    attributes:
+      label: Using since
+      placeholder: "2026-11"
+  - type: textarea
+    id: notes
+    attributes:
+      label: One sentence about where it runs
+      placeholder: Runs in CI on a Spring Boot monolith with eleven modules; we started with the internal-package rule and added cycle detection a month later.
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Permission
+      options:
+        - label: You may list the organisation or project name above in ADOPTERS.md and in project material.
+          required: true

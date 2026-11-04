@@ -21,9 +21,9 @@ version (`0.2.0-SNAPSHOT`); to work against unreleased changes, build from sourc
 | | Version |
 |---|---|
 | Java | 17 or newer (CI builds on 17 and 21) |
-| ArchUnit | 1.4.2 |
-| JUnit | 6.1.2 (JUnit Platform) |
-| Spring Boot | 4.1.0 (optional, only for `modulith-rules-spring`) |
+| ArchUnit | 1.5.0 |
+| JUnit | 6.1.3 (JUnit Platform) |
+| Spring Boot | 4.1.1 (optional, only for `modulith-rules-spring`) |
 
 These are the versions the library is built and tested against. The core module uses only
 long-stable ArchUnit APIs, so older ArchUnit and JUnit 5 lines are likely to work, but
@@ -139,6 +139,68 @@ ModulithRuleSet.forRootPackage("com.example")
     .module("legacy", "com.acme.legacy")              // explicit base package
     .build();
 ```
+
+## How it compares
+
+Most teams arrive here already using ArchUnit, or already looking at Spring Modulith,
+so it helps to say plainly where this library sits between them.
+
+Plain ArchUnit gives you the assertion language and leaves the module model to you.
+That is fine for one or two rules, and it starts to hurt when a dozen modules each need
+their internal packages protected, their allowed dependencies declared and their cycles
+caught, because every team ends up writing the same fifteen rules with slightly
+different bugs. Modulith Rules is those rules, written once, with a module definition
+the rules share and failure messages that say what to change.
+
+Spring Modulith models modules from the Spring application structure and brings
+runtime features with it: event publication registries, observability, documentation
+from the application context. If you are all-in on Spring and want that runtime story,
+it is the more complete choice. Modulith Rules stays at test time, knows nothing about
+your runtime, and does not need Spring at all. The `modulith-rules-spring` module adds
+rules that understand `@Repository`, `@Transactional` and the rest, but the core works
+on any codebase that uses packages. Teams running both are not unusual: Spring Modulith
+for the runtime model, Modulith Rules for the stricter boundary and communication
+contracts.
+
+| | Plain ArchUnit | Spring Modulith | Modulith Rules |
+|---|---|---|---|
+| Module model | You define it per rule | Derived from Spring application packages | Declared once, fluent API or YAML |
+| Runs | Test time | Test time and runtime | Test time only |
+| Framework coupling | None | Spring | None in core; optional Spring module |
+| Communication contracts (sync, async, none) | Write your own | Event-centric | Declared per module pair and enforced |
+| Cycle detection | Slices API, manual setup | Yes | Yes, with the cycle named in the failure |
+| Fix suggestion in the failure message | No | No | Yes |
+
+## Running it in CI
+
+Nothing special is needed because the rules are ordinary tests. A minimal GitHub
+Actions job that runs them on every pull request:
+
+```yaml
+name: Architecture
+on: [pull_request]
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+      - run: mvn --batch-mode test -Dtest=ArchitectureTest -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Running the architecture test on its own keeps the signal clear in the pull request
+checks, and it is usually fast enough to sit before the full suite.
+
+## Who uses it
+
+Teams running Modulith Rules in their builds are listed in [ADOPTERS.md](ADOPTERS.md).
+If that is you, add your team through the
+[adopter issue template](https://github.com/modular-monolith/modular-monolith-rules/issues/new?template=adopter.yml);
+a name and one sentence is plenty.
 
 ## Applying rules
 
