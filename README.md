@@ -21,9 +21,9 @@ version (`0.2.0-SNAPSHOT`); to work against unreleased changes, build from sourc
 | | Version |
 |---|---|
 | Java | 17 or newer (CI builds on 17 and 21) |
-| ArchUnit | 1.4.2 |
-| JUnit | 6.1.2 (JUnit Platform) |
-| Spring Boot | 4.1.0 (optional, only for `modulith-rules-spring`) |
+| ArchUnit | 1.5.0 |
+| JUnit | 6.1.3 (JUnit Platform) |
+| Spring Boot | 4.1.1 (optional, only for `modulith-rules-spring`) |
 
 These are the versions the library is built and tested against. The core module uses only
 long-stable ArchUnit APIs, so older ArchUnit and JUnit 5 lines are likely to work, but
