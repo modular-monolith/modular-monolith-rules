@@ -31,10 +31,19 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase-env-var: GPG_PASSPHRASE
+
+      # The hosted runners moved to Maven 3.10, whose local-repository changes make
+      # central-publishing-maven-plugin 0.11.0 stage bookkeeping files into the bundle,
+      # which Central rejects ("Bundle has content that does NOT have a .pom file").
+      # Pin 3.9 until the plugin catches up. See apache/maven#13388.
+      - name: Pin Maven 3.9
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.11
 
       - name: Set release version
-        run: mvn versions:set -DnewVersion=${{ inputs.version }} --batch-mode
+        run: mvn versions:set -DnewVersion=${{ inputs.version }} -DgenerateBackupPoms=false --batch-mode
 
       # deploy runs the full lifecycle, so this builds, tests, signs and
       # publishes in one pass.
