@@ -460,6 +460,11 @@ try {
 }
 ```
 
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for the workflow, the secrets it needs, and the
+things that have gone wrong before.
+
 ## Repository layout
 
 | Artifact | Purpose |
