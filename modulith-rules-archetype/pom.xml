@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.modularmonolith</groupId>
         <artifactId>modulith-rules-parent</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>modulith-rules-archetype</artifactId>
@@ -16,9 +16,23 @@
     <name>modulith-rules-archetype</name>
     <description>Maven archetype generating a two-module modular monolith with Modulith Rules architecture tests in place</description>
 
+    <!-- Stated explicitly, not inherited: see the note in the parent POM properties -->
+    <url>${project.scm.url}</url>
+    <scm>
+        <connection>${project.scm.connection}</connection>
+        <developerConnection>${project.scm.developerConnection}</developerConnection>
+        <url>${project.scm.url}</url>
+    </scm>
+
     <properties>
         <archetype-packaging.version>3.3.1</archetype-packaging.version>
         <maven-archetype-plugin.version>3.3.1</maven-archetype-plugin.version>
+        <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+        <!-- No Java sources here, so the standard source and javadoc plugins have
+             nothing to do; the jar plugin below produces the classifier jars that
+             Maven Central validation requires for every jar artifact. -->
+        <maven.source.skip>true</maven.source.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
     <build>
@@ -35,13 +49,34 @@
                 <artifactId>maven-archetype-plugin</artifactId>
                 <version>${maven-archetype-plugin.version}</version>
             </plugin>
-            <!-- An archetype has no sources or javadoc of its own; skip those release artifacts -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>placeholder-sources-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>sources</classifier>
+                            <classesDirectory>${project.basedir}/src/empty</classesDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>placeholder-javadoc-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>${project.basedir}/src/empty</classesDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

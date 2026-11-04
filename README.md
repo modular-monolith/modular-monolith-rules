@@ -12,8 +12,8 @@ coupling, and no impact on your production classpath.
 ## Project status
 
 Modulith Rules is published to Maven Central under the `io.modularmonolith` group id;
-the current release is `v0.2.0`. The sources on `main` carry the next development
-version (`0.2.0-SNAPSHOT`); to work against unreleased changes, build from source
+the current release is `v0.3.0`. The sources on `main` carry the next development
+version (`0.4.0-SNAPSHOT`); to work against unreleased changes, build from source
 (see [Installing](#installing)).
 
 ## Requirements
@@ -40,7 +40,7 @@ Add the core module in `test` scope:
 <dependency>
     <groupId>io.modularmonolith</groupId>
     <artifactId>modulith-rules-core</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -51,7 +51,7 @@ Add `modulith-rules-spring` as well if you want the Spring-specific rules:
 <dependency>
     <groupId>io.modularmonolith</groupId>
     <artifactId>modulith-rules-spring</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -65,7 +65,7 @@ individual dependencies:
         <dependency>
             <groupId>io.modularmonolith</groupId>
             <artifactId>modulith-rules-bom</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -74,7 +74,7 @@ individual dependencies:
 ```
 
 To work against unreleased changes instead, build from source and depend on the
-`0.2.0-SNAPSHOT` version:
+`0.4.0-SNAPSHOT` version:
 
 ```bash
 git clone https://github.com/modular-monolith/modular-monolith-rules.git
