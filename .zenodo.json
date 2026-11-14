@@ -1,0 +1,40 @@
+{
+  "upload_type": "software",
+  "title": "Modulith Rules: ArchUnit rules for module boundaries in modular monoliths",
+  "description": "Modulith Rules is an open-source Java library of pre-built ArchUnit rules for enforcing module boundaries in modular monoliths. A single module declaration, written with a fluent API, YAML or package conventions, drives rules for allowed dependencies, internal-package protection, API-only access, module cycles and directional communication contracts, with optional rules for Spring applications. Every violation message names the offending class and ends with a concrete fix. The same declaration renders the module graph as a Mermaid diagram. The library runs at test time only and its core has no framework dependency.",
+  "creators": [
+    {
+      "name": "Matheolane, Omphile"
+    }
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "software architecture",
+    "modular monolith",
+    "architecture testing",
+    "ArchUnit",
+    "Java",
+    "module boundaries",
+    "Spring Boot"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/modular-monolith/modular-monolith-rules",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://central.sonatype.com/artifact/io.modularmonolith/modulith-rules-core",
+      "relation": "isIdenticalTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://modularmonolith.io",
+      "relation": "isDocumentedBy",
+      "resource_type": "other",
+      "scheme": "url"
+    }
+  ]
+}
