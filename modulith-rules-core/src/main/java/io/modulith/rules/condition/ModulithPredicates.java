@@ -98,10 +98,7 @@ public final class ModulithPredicates {
                     }
                     boolean inInternalPackage = false;
                     for (String pattern : internalPatterns) {
-                        String prefix = pattern.endsWith("..")
-                            ? pattern.substring(0, pattern.length() - 2)
-                            : pattern;
-                        if (javaClass.getName().startsWith(prefix)) {
+                        if (ModuleDefinition.classMatchesPackagePattern(javaClass.getName(), pattern)) {
                             inInternalPackage = true;
                             break;
                         }
