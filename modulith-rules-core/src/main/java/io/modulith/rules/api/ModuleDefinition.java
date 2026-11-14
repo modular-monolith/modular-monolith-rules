@@ -173,12 +173,35 @@ public final class ModuleDefinition {
             return false;
         }
         for (String pattern : archUnitApiPackageIdentifiers()) {
-            String prefix = pattern.endsWith("..") ? pattern.substring(0, pattern.length() - 2) : pattern;
-            if (fullClassName.startsWith(prefix)) {
+            if (classMatchesPackagePattern(fullClassName, pattern)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Checks whether a class sits in the package named by a resolved pattern, or in one
+     * of its sub-packages. The match respects package boundaries, so the pattern
+     * {@code com.example.b.c..} matches {@code com.example.b.c.Foo} and
+     * {@code com.example.b.c.sub.Bar} but not {@code com.example.b.cache.Foo}.
+     * A trailing {@code ..} is optional and makes no difference.
+     *
+     * @param fullClassName fully-qualified class name
+     * @param pattern       resolved package pattern, for example {@code "com.example.b.api.."}
+     * @return {@code true} if the class lives in that package tree
+     */
+    public static boolean classMatchesPackagePattern(String fullClassName, String pattern) {
+        if (fullClassName == null || pattern == null || pattern.isEmpty()) {
+            return false;
+        }
+        String packageName = pattern.endsWith("..") ? pattern.substring(0, pattern.length() - 2) : pattern;
+        while (packageName.endsWith(".")) {
+            packageName = packageName.substring(0, packageName.length() - 1);
+        }
+        int lastDot = fullClassName.lastIndexOf('.');
+        String classPackage = lastDot < 0 ? "" : fullClassName.substring(0, lastDot);
+        return classPackage.equals(packageName) || classPackage.startsWith(packageName + ".");
     }
 
     private Set<String> resolvePatterns(Set<String> patterns) {
