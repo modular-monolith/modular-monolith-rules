@@ -25,7 +25,7 @@
     </scm>
 
     <properties>
-        <archetype-packaging.version>3.3.1</archetype-packaging.version>
+        <archetype-packaging.version>3.4.1</archetype-packaging.version>
         <maven-archetype-plugin.version>3.3.1</maven-archetype-plugin.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
         <!-- No Java sources here, so the standard source and javadoc plugins have
